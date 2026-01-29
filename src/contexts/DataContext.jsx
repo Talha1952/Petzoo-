@@ -150,6 +150,7 @@ export const DataProvider = ({ children }) => {
     };
 
     const updateProduct = async (id, updatedFields) => {
+        console.log('Updating product ID:', id, 'with fields:', updatedFields);
         try {
             const { error } = await supabase
                 .from('products')

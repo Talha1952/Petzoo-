@@ -60,6 +60,7 @@ export default function Inventory() {
     }, [filteredProducts, activeCategory]);
 
     const handleSubmit = (e) => {
+        console.log('Form Data Submitted:', formData);  
         e.preventDefault();
         const productData = {
             name: formData.name,
@@ -67,8 +68,8 @@ export default function Inventory() {
             buy: Number(formData.buy),
             sell: Number(formData.sell),
             stock: Number(formData.stock),
-            unitLabel: isNewUnit ? customUnit : formData.unitLabel,
-            lowStockThreshold: formData.lowStockThreshold ? Number(formData.lowStockThreshold) : null
+            unit_label: isNewUnit ? customUnit : formData.unitLabel,
+            low_Stock_Threshold: formData.lowStockThreshold ? Number(formData.lowStockThreshold) : null
         };
 
         if (editingProduct) {
