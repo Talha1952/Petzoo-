@@ -186,47 +186,107 @@ export const DataProvider = ({ children }) => {
         }
     };
 
+    // const loadDefaultList = async () => {
+    //     if (!window.confirm("Load default product list? This will ADD to existing products.")) return;
+    //     try {
+    //         const response = await supabase
+    //             .from('products')
+    //             .delete()
+    //              .neq('id', 0); // Dummy condition to avoid deleting all if table is empty
+
+    //         if (response.error) throw response.error;
+    //         setProducts([]);
+    //     } catch (error) {
+    //         console.error('Error clearing products before loading defaults:', error);
+    //     }
+    //     try {
+    //         // Supabase will auto-generate id, so we don't need to include it
+    //         const productsToInsert = INITIAL_PRODUCTS.map(p => ({
+    //             name: p.name,
+    //             category: p.category,
+    //             buy: p.buy,
+    //             sell: p.sell,
+    //             stock: p.stock,
+    //             unit_label: p.unitLabel, // Convert camelCase to snake_case
+    //             low_stock_threshold: p.lowStockThreshold || null
+    //         }));
+
+    //         const { data, error } = await supabase
+    //             .from('products')
+    //             .insert(productsToInsert)
+    //             .select();
+
+    //         if (error) throw error;
+
+    //         // Convert back to app format
+    //         const formattedProducts = data.map(p => ({
+    //             id: p.id,
+    //             name: p.name,
+    //             category: p.category,
+    //             buy: p.buy,
+    //             sell: p.sell,
+    //             stock: p.stock,
+    //             unitLabel: p.unit_label,
+    //             lowStockThreshold: p.low_stock_threshold
+    //         }));
+
+    //         setProducts([...products, ...formattedProducts]);
+    //         toast.success(`${data.length} default products loaded!`);
+    //     } catch (error) {
+    //         console.error('Error loading defaults:', error);
+    //         toast.error(`Failed to load default products: ${error.message}`);
+    //     }
+    // };
+
+
     const loadDefaultList = async () => {
-        if (!window.confirm("Load default product list? This will ADD to existing products.")) return;
+    try {
+        const { data: existing, error } = await supabase
+            .from('products')
+            .select('id')
+            .limit(1);
 
-        try {
-            // Supabase will auto-generate id, so we don't need to include it
-            const productsToInsert = INITIAL_PRODUCTS.map(p => ({
-                name: p.name,
-                category: p.category,
-                buy: p.buy,
-                sell: p.sell,
-                stock: p.stock,
-                unit_label: p.unitLabel, // Convert camelCase to snake_case
-                low_stock_threshold: p.lowStockThreshold || null
-            }));
+        if (error) throw error;
 
-            const { data, error } = await supabase
-                .from('products')
-                .insert(productsToInsert)
-                .select();
-
-            if (error) throw error;
-
-            // Convert back to app format
-            const formattedProducts = data.map(p => ({
-                id: p.id,
-                name: p.name,
-                category: p.category,
-                buy: p.buy,
-                sell: p.sell,
-                stock: p.stock,
-                unitLabel: p.unit_label,
-                lowStockThreshold: p.low_stock_threshold
-            }));
-
-            setProducts([...products, ...formattedProducts]);
-            toast.success(`${data.length} default products loaded!`);
-        } catch (error) {
-            console.error('Error loading defaults:', error);
-            toast.error(`Failed to load default products: ${error.message}`);
+        if (existing.length > 0) {
+           //toast.info("Products already exist. Defaults not loaded.");
+            return;
         }
-    };
+
+        const productsToInsert = INITIAL_PRODUCTS.map(p => ({
+            name: p.name,
+            category: p.category,
+            buy: p.buy,
+            sell: p.sell,
+            stock: p.stock,
+            unit_label: p.unitLabel,
+            low_stock_threshold: p.lowStockThreshold ?? 0
+        }));
+
+        const { data, error: insertError } = await supabase
+            .from('products')
+            .insert(productsToInsert)
+            .select();
+
+        if (insertError) throw insertError;
+
+        setProducts(data.map(p => ({
+            id: p.id,
+            name: p.name,
+            category: p.category,
+            buy: p.buy,
+            sell: p.sell,
+            stock: p.stock,
+            unitLabel: p.unit_label,
+            lowStockThreshold: p.low_stock_threshold
+        })));
+
+        toast.success("Default products loaded successfully!");
+    } catch (err) {
+        console.error(err);
+        toast.error(err.message);
+    }
+};
 
     // --- INVOICE ACTIONS ---
     const addInvoice = async (invoice) => {

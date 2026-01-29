@@ -69,7 +69,7 @@ export default function Inventory() {
             sell: Number(formData.sell),
             stock: Number(formData.stock),
             unit_label: isNewUnit ? customUnit : formData.unitLabel,
-            low_Stock_Threshold: formData.lowStockThreshold ? Number(formData.lowStockThreshold) : null
+            low_stock_threshold: formData.lowStockThreshold ? Number(formData.lowStockThreshold) : null
         };
 
         if (editingProduct) {
