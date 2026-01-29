@@ -1,4 +1,5 @@
 import React from 'react';
+import logo from '../assets/logo-orange.png';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Package, ShoppingCart, CreditCard, LogOut, User, Users, FileText } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -16,7 +17,7 @@ export function Sidebar({ className }) {
     return (
         <aside className={cn("w-64 bg-dark text-white flex flex-col h-full", className)}>
             <div className="p-5 border-b border-gray-800 bg-black/20 flex justify-center">
-                <img src="/src/assets/logo-orange.png" alt="Petzo Logo" className="h-10 w-auto object-contain mix-blend-screen" />
+                <img src={logo} alt="Petzo Logo" className="h-10 w-auto object-contain mix-blend-screen" />
             </div>
 
             <nav className="flex-1 overflow-y-auto py-4">
